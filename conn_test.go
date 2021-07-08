@@ -11,7 +11,7 @@ import (
 )
 
 func TestConn(t *testing.T) {
-	c, err := net.Dial("tcp4", "127.0.0.1:6377")
+	c, err := net.Dial("tcp4", "127.0.0.1:6379")
 	if err != nil {
 		panic(err)
 	}
