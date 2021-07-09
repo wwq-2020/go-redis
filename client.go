@@ -14,6 +14,7 @@ type Client interface {
 	hashCommand
 	setCommand
 	zsetCommand
+	latencyCommand
 	RoundTrip(ctx context.Context, req protocol.Command, resp protocol.Reply) error
 }
 

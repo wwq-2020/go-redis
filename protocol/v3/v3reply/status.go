@@ -37,6 +37,12 @@ func (r *Status) DecodeFrom(br *bufio.Reader) error {
 			return errors.Trace(protocol.ErrNil)
 		}
 		r.Err = errors.New(msg)
+	case *BlobError:
+		msg := string(t.Val)
+		if msg == "" {
+			return errors.Trace(protocol.ErrNil)
+		}
+		r.Err = errors.New(msg)
 	case *SimpleString:
 		r.Success = true
 	case *BlobString:
