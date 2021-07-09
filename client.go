@@ -10,6 +10,10 @@ import (
 // Client Client
 type Client interface {
 	stringCommand
+	listCommand
+	hashCommand
+	setCommand
+	zsetCommand
 	RoundTrip(ctx context.Context, req protocol.Command, resp protocol.Reply) error
 }
 
