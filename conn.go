@@ -18,6 +18,7 @@ type Dialer func(ctx context.Context) (Conn, error)
 // Conn Conn
 type Conn interface {
 	RoundTrip(ctx context.Context, req protocol.Command, resp protocol.Reply) error
+	Tracking(prefix string, callback func(key string)) error
 }
 
 // Conn Conn

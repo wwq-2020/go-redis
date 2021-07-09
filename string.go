@@ -8,11 +8,22 @@ import (
 	"github.com/wwq-2020/go.common/errors"
 )
 
+type stringCommand interface {
+	Set(ctx context.Context, key, value string) error
+	SetGet(ctx context.Context, key, value string) (string, error)
+	SetNX(ctx context.Context, key, value string) (bool, error)
+	SetNXEX(ctx context.Context, key, value string, seconds int) (bool, error)
+	SetXX(ctx context.Context, key, value string) (bool, error)
+	SetXXEX(ctx context.Context, key, value string, seconds int) (bool, error)
+	SetEX(ctx context.Context, key, value string, seconds int) (bool, error)
+	Get(ctx context.Context, key string) (string, error)
+}
+
 // Set Set
-func (c *Client) Set(ctx context.Context, key, value string) error {
+func (c *client) Set(ctx context.Context, key, value string) error {
 	req := v3command.NewSet(key, value)
 	resp := v3reply.NewStatus()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return errors.Trace(err)
 	}
 	if resp.Err != nil {
@@ -22,10 +33,10 @@ func (c *Client) Set(ctx context.Context, key, value string) error {
 }
 
 // SetGet SetGet
-func (c *Client) SetGet(ctx context.Context, key, value string) (string, error) {
+func (c *client) SetGet(ctx context.Context, key, value string) (string, error) {
 	req := v3command.NewSetGet(key, value)
 	resp := v3reply.NewStatus()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return "", errors.Trace(err)
 	}
 	if resp.Err != nil {
@@ -35,20 +46,20 @@ func (c *Client) SetGet(ctx context.Context, key, value string) (string, error) 
 }
 
 // SetNX SetNX
-func (c *Client) SetNX(ctx context.Context, key, value string) (bool, error) {
+func (c *client) SetNX(ctx context.Context, key, value string) (bool, error) {
 	req := v3command.NewSetNX(key, value)
 	resp := v3reply.NewNumber()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return false, errors.Trace(err)
 	}
 	return resp.Val == 1, nil
 }
 
 // SetNXEX SetNXEX
-func (c *Client) SetNXEX(ctx context.Context, key, value string, seconds int) (bool, error) {
+func (c *client) SetNXEX(ctx context.Context, key, value string, seconds int) (bool, error) {
 	req := v3command.NewSetNXEX(key, value, seconds)
 	resp := v3reply.NewStatus()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return false, errors.Trace(err)
 	}
 	if resp.Err != nil {
@@ -58,10 +69,10 @@ func (c *Client) SetNXEX(ctx context.Context, key, value string, seconds int) (b
 }
 
 // SetXX SetXX
-func (c *Client) SetXX(ctx context.Context, key, value string) (bool, error) {
+func (c *client) SetXX(ctx context.Context, key, value string) (bool, error) {
 	req := v3command.NewSetXX(key, value)
 	resp := v3reply.NewStatus()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return false, errors.Trace(err)
 	}
 	if resp.Err != nil {
@@ -71,10 +82,10 @@ func (c *Client) SetXX(ctx context.Context, key, value string) (bool, error) {
 }
 
 // SetXXEX SetXXEX
-func (c *Client) SetXXEX(ctx context.Context, key, value string, seconds int) (bool, error) {
+func (c *client) SetXXEX(ctx context.Context, key, value string, seconds int) (bool, error) {
 	req := v3command.NewSetXXEX(key, value, seconds)
 	resp := v3reply.NewStatus()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return false, errors.Trace(err)
 	}
 	if resp.Err != nil {
@@ -84,20 +95,20 @@ func (c *Client) SetXXEX(ctx context.Context, key, value string, seconds int) (b
 }
 
 // SetEX SetEX
-func (c *Client) SetEX(ctx context.Context, key, value string, seconds int) (bool, error) {
+func (c *client) SetEX(ctx context.Context, key, value string, seconds int) (bool, error) {
 	req := v3command.NewSetEX(key, value, seconds)
 	resp := v3reply.NewNumber()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return false, errors.Trace(err)
 	}
 	return resp.Val == 1, nil
 }
 
 // Get Get
-func (c *Client) Get(ctx context.Context, key string) (string, error) {
+func (c *client) Get(ctx context.Context, key string) (string, error) {
 	req := v3command.NewGet(key)
 	resp := v3reply.NewStatus()
-	if err := c.Do(ctx, req, resp); err != nil {
+	if err := c.RoundTrip(ctx, req, resp); err != nil {
 		return "", errors.Trace(err)
 	}
 	if resp.Err != nil {

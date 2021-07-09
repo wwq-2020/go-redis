@@ -5,7 +5,6 @@ import (
 )
 
 func TestConn(t *testing.T) {
-
 	// onInvalid := func(key string) {
 	// 	fmt.Println(key)
 	// 	ch <- key

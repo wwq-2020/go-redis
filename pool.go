@@ -12,16 +12,22 @@ type Pool interface {
 	Put(Conn)
 }
 
+// PoolConf PoolConf
+type PoolConf struct {
+	Dialer   Dialer
+	MaxConns int
+}
+
 type pool struct {
-	dialer Dialer
-	size   int
+	dialer   Dialer
+	maxConns int
 }
 
 // NewPool NewPool
-func NewPool(size int, dialer Dialer) Pool {
+func NewPool(conf *PoolConf) Pool {
 	return &pool{
-		size:   size,
-		dialer: dialer,
+		dialer:   conf.Dialer,
+		maxConns: conf.MaxConns,
 	}
 }
 

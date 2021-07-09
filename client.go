@@ -8,25 +8,56 @@ import (
 )
 
 // Client Client
-type Client struct {
+type Client interface {
+	stringCommand
+	RoundTrip(ctx context.Context, req protocol.Command, resp protocol.Reply) error
+}
+
+type client struct {
 	pool Pool
 }
 
-// Conf Conf
-type Conf struct {
-	Addr    string
-	Network string
+// ClientConf ClientConf
+type ClientConf struct {
+	Addr     string
+	Network  string
+	Password string
+	MaxConns int
 }
 
-// New New
-func New(pool Pool) *Client {
-	return &Client{
+// vars
+var (
+	DefaultClientConf = &ClientConf{
+		Addr:     "127.0.0.1:6379",
+		Network:  "tcp",
+		MaxConns: 10,
+	}
+)
+
+// ToPoolConf ToPoolConf
+func (c *ClientConf) ToPoolConf() *PoolConf {
+	dialer := NewDialer(c.Network, c.Addr, c.Password)
+	return &PoolConf{
+		Dialer:   dialer,
+		MaxConns: c.MaxConns,
+	}
+}
+
+// NewClient NewClient
+func NewClient(conf *ClientConf) Client {
+	pool := NewPool(conf.ToPoolConf())
+	return &client{
 		pool: pool,
 	}
 }
 
+// DefaultClient DefaultClient
+func DefaultClient() Client {
+	return NewClient(DefaultClientConf)
+}
+
 // Do Do
-func (c *Client) Do(ctx context.Context, req protocol.Command, resp protocol.Reply) error {
+func (c *client) RoundTrip(ctx context.Context, req protocol.Command, resp protocol.Reply) error {
 	conn, err := c.pool.Get(ctx)
 	if err != nil {
 		return errors.Trace(err)
