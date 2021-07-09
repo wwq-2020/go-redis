@@ -8,10 +8,9 @@ import (
 )
 
 // NewDialer NewDialer
-func NewDialer(network, addr, password string, connFactory ConnFactory) Dialer {
-	dialer := net.Dialer{}
+func NewDialer(netDialer *net.Dialer, network, addr, password string, connFactory ConnFactory) Dialer {
 	return func(ctx context.Context) (Conn, error) {
-		c, err := dialer.DialContext(ctx, network, addr)
+		c, err := netDialer.DialContext(ctx, network, addr)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}

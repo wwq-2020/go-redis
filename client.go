@@ -2,6 +2,8 @@ package redis
 
 import (
 	"context"
+	"net"
+	"time"
 
 	"github.com/wwq-2020/go-redis/protocol"
 	"github.com/wwq-2020/go.common/errors"
@@ -9,10 +11,12 @@ import (
 
 // vars
 var (
-	DefaultNetwork     = "tcp"
-	DefaultAddr        = "127.0.0.1:6379"
-	DefaultConnFactory = NewConn
-	DefaultMaxConns    = 10
+	DefaultNetwork       = "tcp"
+	DefaultAddr          = "127.0.0.1:6379"
+	DefaultConnFactory   = NewConn
+	DefaultMaxConns      = 10
+	DefaultDialTimeout   = time.Second * 5
+	DefaultDialKeepalive = time.Second * 30
 )
 
 // Client Client
@@ -32,26 +36,34 @@ type client struct {
 
 // ClientConf ClientConf
 type ClientConf struct {
-	Addr        string
-	Network     string
-	Password    string
-	MaxConns    int
-	ConnFactory ConnFactory
+	Addr          string
+	Network       string
+	Password      string
+	MaxConns      int
+	ConnFactory   ConnFactory
+	DialTimeout   time.Duration
+	DialKeepalive time.Duration
 }
 
 // vars
 var (
 	DefaultClientConf = &ClientConf{
-		Addr:        DefaultAddr,
-		Network:     DefaultNetwork,
-		MaxConns:    DefaultMaxConns,
-		ConnFactory: DefaultConnFactory,
+		Addr:          DefaultAddr,
+		Network:       DefaultNetwork,
+		MaxConns:      DefaultMaxConns,
+		ConnFactory:   DefaultConnFactory,
+		DialTimeout:   DefaultDialTimeout,
+		DialKeepalive: DefaultDialKeepalive,
 	}
 )
 
 // ToPoolConf ToPoolConf
 func (c *ClientConf) ToPoolConf() *PoolConf {
-	dialer := NewDialer(c.Network, c.Addr, c.Password, c.ConnFactory)
+	netDialer := &net.Dialer{
+		Timeout:   c.DialTimeout,
+		KeepAlive: c.DialKeepalive,
+	}
+	dialer := NewDialer(netDialer, c.Network, c.Addr, c.Password, c.ConnFactory)
 	return &PoolConf{
 		Dialer:   dialer,
 		MaxConns: c.MaxConns,
@@ -71,6 +83,12 @@ func (c *ClientConf) Fill() {
 	}
 	if c.MaxConns == 0 {
 		c.MaxConns = DefaultMaxConns
+	}
+	if c.DialTimeout == 0 {
+		c.DialTimeout = DefaultDialTimeout
+	}
+	if c.DialKeepalive == 0 {
+		c.DialKeepalive = DefaultDialKeepalive
 	}
 }
 
