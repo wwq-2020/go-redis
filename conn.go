@@ -28,6 +28,9 @@ type conn struct {
 	raw net.Conn
 }
 
+// ConnFactory ConnFactory
+type ConnFactory func(net.Conn) Conn
+
 // NewConn NewConn
 func NewConn(raw net.Conn) Conn {
 	br := bufio.NewReaderSize(raw, 1<<10)
