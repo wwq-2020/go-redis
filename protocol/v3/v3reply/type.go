@@ -1,4 +1,25 @@
-package v3
+package v3reply
+
+import "github.com/wwq-2020/go-redis/protocol"
+
+// consts
+const (
+	ReplyTypeBlobError      protocol.ReplyType = "BlobError"
+	ReplyTypeBlobString     protocol.ReplyType = "BlobString"
+	ReplyTypeBoolean        protocol.ReplyType = "Boolean"
+	ReplyTypeDouble         protocol.ReplyType = "Double"
+	ReplyTypeMap            protocol.ReplyType = "Map"
+	ReplyTypeNull           protocol.ReplyType = "NULL"
+	ReplyTypeNumber         protocol.ReplyType = "Number"
+	ReplyTypePush           protocol.ReplyType = "Push"
+	ReplyTypeSimpleError    protocol.ReplyType = "SimpleError"
+	ReplyTypeSimpleString   protocol.ReplyType = "SimpleString"
+	ReplyTypeStream         protocol.ReplyType = "Stream"
+	ReplyTypeVerbatimString protocol.ReplyType = "VerbatimString"
+	ReplyTypeBigNumber      protocol.ReplyType = "BigNumber"
+	ReplyTypeSet            protocol.ReplyType = "Set"
+	ReplyArray              protocol.ReplyType = "Array"
+)
 
 // consts
 const (
