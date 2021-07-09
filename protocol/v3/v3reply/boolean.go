@@ -24,6 +24,10 @@ func (r *Boolean) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *Boolean) DecodeFrom(br *bufio.Reader) error {
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
 	val, err := decodeNextBool(br)
 	if err != nil {
 		return errors.Trace(err)

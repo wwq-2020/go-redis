@@ -2,6 +2,7 @@ package redis
 
 import (
 	"bufio"
+	"context"
 	"net"
 
 	"github.com/wwq-2020/go.common/errors"
@@ -11,24 +12,38 @@ import (
 	"github.com/wwq-2020/go-redis/protocol/v3/v3reply"
 )
 
+// Dialer Dialer
+type Dialer func(ctx context.Context) (Conn, error)
+
 // Conn Conn
-type Conn struct {
-	br *bufio.Reader
-	bw *bufio.Writer
+type Conn interface {
+	RoundTrip(ctx context.Context, req protocol.Command, resp protocol.Reply) error
+}
+
+// Conn Conn
+type conn struct {
+	br  *bufio.Reader
+	bw  *bufio.Writer
+	raw net.Conn
 }
 
 // NewConn NewConn
-func NewConn(c net.Conn) *Conn {
-	br := bufio.NewReaderSize(c, 1<<10)
-	bw := bufio.NewWriterSize(c, 1<<10)
-	return &Conn{
-		br: br,
-		bw: bw,
+func NewConn(raw net.Conn) Conn {
+	br := bufio.NewReaderSize(raw, 1<<10)
+	bw := bufio.NewWriterSize(raw, 1<<10)
+	return &conn{
+		br:  br,
+		bw:  bw,
+		raw: raw,
 	}
 }
 
 // RoundTrip RoundTrip
-func (c *Conn) RoundTrip(req protocol.Command, resp protocol.Reply) error {
+func (c *conn) RoundTrip(ctx context.Context, req protocol.Command, resp protocol.Reply) error {
+	d, ok := ctx.Deadline()
+	if ok {
+		c.raw.SetDeadline(d)
+	}
 	if err := req.EncodeTo(c.bw); err != nil {
 		return errors.Trace(err)
 	}
@@ -42,17 +57,17 @@ func (c *Conn) RoundTrip(req protocol.Command, resp protocol.Reply) error {
 }
 
 // Tracking Tracking
-func (c *Conn) Tracking(prefix string, callback func(key string)) error {
+func (c *conn) Tracking(prefix string, callback func(key string)) error {
 	var req protocol.Command
 	var resp protocol.Reply
 	req = v3command.NewHello(3)
 	resp = v3reply.NewMap()
-	if err := c.RoundTrip(req, resp); err != nil {
+	if err := c.RoundTrip(context.TODO(), req, resp); err != nil {
 		return errors.Trace(err)
 	}
 	req = v3command.NewTracking(prefix)
 	resp = v3reply.NewSimpleString()
-	if err := c.RoundTrip(req, resp); err != nil {
+	if err := c.RoundTrip(context.TODO(), req, resp); err != nil {
 		return errors.Trace(err)
 	}
 	for {

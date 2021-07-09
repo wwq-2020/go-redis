@@ -26,6 +26,10 @@ func (r *Map) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *Map) DecodeFrom(br *bufio.Reader) error {
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
 	length, err := decodeNextInt(br)
 	if err != nil {
 		return errors.Trace(err)

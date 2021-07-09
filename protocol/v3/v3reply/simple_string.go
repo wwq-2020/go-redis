@@ -24,11 +24,15 @@ func (r *SimpleString) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *SimpleString) DecodeFrom(br *bufio.Reader) error {
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
 	bytes, _, err := br.ReadLine()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	r.Val = bytes
+	r.Val = bytes[1:]
 	return nil
 }
 

@@ -23,7 +23,11 @@ func (r *Null) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *Null) DecodeFrom(br *bufio.Reader) error {
-	_, _, err := br.ReadLine()
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	_, _, err = br.ReadLine()
 	if err != nil {
 		return errors.Trace(err)
 	}

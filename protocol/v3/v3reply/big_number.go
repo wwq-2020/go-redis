@@ -23,6 +23,10 @@ func (r *BigNumber) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *BigNumber) DecodeFrom(br *bufio.Reader) error {
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
 	return nil
 }
 

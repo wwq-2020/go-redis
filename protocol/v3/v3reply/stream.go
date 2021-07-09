@@ -23,6 +23,10 @@ func (r *Stream) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *Stream) DecodeFrom(br *bufio.Reader) error {
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
 	return nil
 }
 

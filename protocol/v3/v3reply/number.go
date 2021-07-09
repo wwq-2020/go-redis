@@ -24,10 +24,15 @@ func (r *Number) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *Number) DecodeFrom(br *bufio.Reader) error {
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
 	val, err := decodeNextInt(br)
 	if err != nil {
 		return errors.Trace(err)
 	}
+
 	r.Val = val
 	return nil
 }

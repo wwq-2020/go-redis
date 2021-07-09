@@ -24,6 +24,10 @@ func (r *Push) Type() protocol.ReplyType {
 
 // DecodeFrom DecodeFrom
 func (r *Push) DecodeFrom(br *bufio.Reader) error {
+	_, err := br.Peek(1)
+	if err != nil {
+		return errors.Trace(err)
+	}
 	length, err := decodeNextInt(br)
 	if err != nil {
 		return errors.Trace(err)

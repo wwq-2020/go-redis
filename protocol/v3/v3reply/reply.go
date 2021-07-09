@@ -7,6 +7,11 @@ import (
 	"github.com/wwq-2020/go.common/errors"
 )
 
+// consts
+const (
+	ReplyOK = "OK"
+)
+
 // Decode Decode
 func Decode(br *bufio.Reader) (protocol.Reply, error) {
 	buf, err := br.Peek(1)

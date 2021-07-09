@@ -6,4 +6,5 @@ import "github.com/wwq-2020/go.common/errors"
 var (
 	ErrInvalidProtocol = errors.Std("invalid protocol")
 	ErrUnsupportedType = errors.Std("unsupported type")
+	ErrNil             = errors.Std("nil")
 )

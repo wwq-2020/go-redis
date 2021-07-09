@@ -19,6 +19,7 @@ const (
 	ReplyTypeBigNumber      protocol.ReplyType = "BigNumber"
 	ReplyTypeSet            protocol.ReplyType = "Set"
 	ReplyArray              protocol.ReplyType = "Array"
+	ReplyStatus             protocol.ReplyType = "Status"
 )
 
 // consts
