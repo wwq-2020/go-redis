@@ -41,6 +41,8 @@ func (r *Status) DecodeFrom(br *bufio.Reader) error {
 		r.Success = true
 	case *BlobString:
 		r.Val = t.Val
+	case *Number:
+		r.Success = t.Val == 1
 	case *Null:
 		r.Err = errors.Trace(protocol.ErrNil)
 	default:
